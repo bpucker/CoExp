@@ -1,6 +1,6 @@
 ### Boas Pucker ###
-### bpucker@cebitec.uni-bielefeld.de ###
-### v0.13 ###
+### b.pucker@tu-braunschweig.de ###
+### v0.135 ###
 
 __usage__ = """
 					python coexp3.py
