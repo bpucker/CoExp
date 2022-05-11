@@ -26,11 +26,15 @@ Optional:
 
 `--out` specifies the output folder. Temporary and result files will be stored in this folder. This folder will be created if it does not exist already.
 
-`--ann` specifies .
+`--ann` specifies the annotation file. This file contains a gene ID in the first column and an annotation in the second column. The IDs in this file need to match the IDs of the genes of interest and the IDs in the first column of the count table. If the IDs do not match, it is not possible to assign functional annotations.
 
-`--rcut` specifies .
+`--rcut` specifies the minimal correlation coefficient that serves as a cutoff when reporting co-expressed gene pairs. Default: 0.65.
 
-`--pcut` specifies .
+`--pcut` specifies the maximal p-value that serves as a cutoff when reporting co-expressed gene pairs. Default: 0.05.
 
-`--expcut` specifies .
+`--expcut` specifies the minimal cumulative expression across all samples. Only genes above this cutoff are considered for the co-expression analysis. Default: 5.
+
+
+## Reference ##
+
 
