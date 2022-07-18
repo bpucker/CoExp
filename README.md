@@ -39,11 +39,41 @@ Optional:
 
 ## RNA-seq data processing ##
 
-### kallisto_pipeline3.py usage ###
+### kallisto_pipeline3.py ###
+```
+Usage
+python3 kallisto_pipeline3.py --cds <FILE> --reads <DIR> --out <DIR> --tmp <DIR>
+
+Mandatory:
+--cds       STR   CDS reference file
+--reads     STR   FASTQ file folder
+--out       STR   Output folder
+--tmp       STR   Temp folder
+
+Optional:
+--kallisto  STR    Full path to kallisto [kallisto]
+--cpus      STR    Number of CPUs [10]
+```
+
+`--cds` specifies a FASTA file that contains the coding sequences (CDS) that are used as a reference by kallisto.
+
+`--reads` specifies a folder containing many subfolders with FASTQ files. Each subfolder should contain one FASTQ file (single end) or two FASTQ files (paired-end).
+
+`--out` specifies an output folder. This folder will be generated if it does not exist already. All individual count tables will be placed in this folder. This folder needs to be given to the next script to merge all single files into one count table.
+
+`--tmp` specifies a temporary output folder. This folder will be generated if it does not exist already.
+
+`--kallisto` specifies the path to kallisto. This is necessary if kallisto is not in the $PATH. Default: kallisto.
+
+`--cpus` specifies the number of CPUs to be used by kallisto. Default: 10.
+
 
 ### merge_kallisto_output3.py ###
 
+
 ### filter_RNAseq_samples.py ###
+
+
 
 
 ## Reference ##
