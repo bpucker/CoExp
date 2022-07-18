@@ -1,8 +1,10 @@
 # CoExp
-This tool allows the identified of genes that are co-expressed with a set of genes of interest. A list of genes and a count table are provided. A co-expression analysis is performed for each gene in the list. All pairs of genes above a certain cutoff are reported in the result table.
+CoExp allows the identified of genes that are co-expressed with a set of genes of interest. A list of genes and a count table are provided. A co-expression analysis is performed for each gene in the list. All pairs of genes above a certain cutoff are reported in the result table.
+
+This repository also contains several scripts required to process RNA-seq data sets with kallisto. This leads to the generation of count tables that are suitable for the actual co-expression analysis. There is also a script for the filtering of count tables to exclude suspicious/bad samples.
 
 
-## Usage ##
+## CoExp analysis ##
 
 ```
 Usage
@@ -33,6 +35,15 @@ Optional:
 `--pcut` specifies the maximal p-value that serves as a cutoff when reporting co-expressed gene pairs. Default: 0.05.
 
 `--expcut` specifies the minimal cumulative expression across all samples. Only genes above this cutoff are considered for the co-expression analysis. Default: 5.
+
+
+## RNA-seq data processing ##
+
+### kallisto_pipeline3.py usage ###
+
+### merge_kallisto_output3.py ###
+
+### filter_RNAseq_samples.py ###
 
 
 ## Reference ##
