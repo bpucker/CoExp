@@ -69,6 +69,22 @@ Optional:
 
 
 ### merge_kallisto_output3.py ###
+```
+Usage
+python3 merge_kallisto_output3.py --in <DIR> --gff <FILE> --tpms <FILE> --counts <FILE>
+--in      STR   Input folder
+--gff     STR   Input GFF file
+--tpms    STR   Output TPM file
+--counts  STR   Output counts file
+```
+
+`--in` specifies the input folder that contains the individual count table files. Each file belongs to one SRA sample.
+
+`--gff` specifies a GFF file to merge expression of different transcripts at the gene level. Give an empty text file to keep expression at the transcript level.
+
+`--tpms` specifies the final TPM output file. One sample will be represented in one column. All genes/transcripts will be listed in the first column. The date will be stored in the top left field of this table.
+
+`--counts` specifies the final counts output file. One sample will be represented in one column. All genes/transcripts will be listed in the first column. The date will be stored in the top left field of this table.
 
 
 ### filter_RNAseq_samples.py ###
