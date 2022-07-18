@@ -98,15 +98,19 @@ Mandatory:
 --out     STR   Output folder
 
 Optional:
---min     INT   MIN_EXP
---max     INT   MAX_EXP
+--min     INT   MIN_EXP [10]
+--max     INT   MAX_EXP [80]
 ```
 
-`--tpms` specifies 
-`--counts` specifies 
-`--out` specifies 
-`--min` specifies 
-`--max` specifies 
+`--tpms` specifies the input file containing the TPMs.
+
+`--counts` specifies the input file containing the counts.
+
+`--out` specifies the output folder. This folder will be created if it does not exist already.
+
+`--min` specifies the minimal percentage of expression that needs to fall on the top100 transcripts. Default: 10%.
+
+`--max` specifies the maximal percentage of expression that needs to fall on the top100 transcripts. Default: 80%.
 
 
 ## Reference ##
