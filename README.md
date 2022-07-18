@@ -88,8 +88,25 @@ python3 merge_kallisto_output3.py --in <DIR> --gff <FILE> --tpms <FILE> --counts
 
 
 ### filter_RNAseq_samples.py ###
+```
+Usage
+python3 filter_RNAseq_samples.py --tpms <FILE> --counts <FILE> --out <DIR>
 
+Mandatory:
+--tpms    STR   Input TPM file
+--counts  STR   Input counts file
+--out     STR   Output folder
 
+Optional:
+--min     INT   MIN_EXP
+--max     INT   MAX_EXP
+```
+
+`--tpms` specifies 
+`--counts` specifies 
+`--out` specifies 
+`--min` specifies 
+`--max` specifies 
 
 
 ## Reference ##
