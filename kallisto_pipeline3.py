@@ -1,7 +1,7 @@
 ### Boas Pucker ###
 ### Milan Borchert ###
 ### b.pucker@tu-bs.de ###
-### v0.35 ###
+### v0.36 ###
 
 __usage__ = """
 					python3 kallisto_pipeline3.py
@@ -138,6 +138,9 @@ def main( arguments ):
 			threads = 10
 	else:
 		threads = 10
+	
+	if final_output_folder[-1] != "/":
+		final_output_folder += "/"
 	
 	if not os.path.exists( tmp_cluster_folder ):
 		os.makedirs( tmp_cluster_folder )
