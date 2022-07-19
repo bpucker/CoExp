@@ -1,7 +1,7 @@
 ### Boas Pucker ###
 ### Milan Borchert ###
 ### b.pucker@tu-bs.de ###
-### v0.31 ###
+### v0.32 ###
 
 __usage__ = """
 					python3 merge_kallisto_output3.py
@@ -51,7 +51,7 @@ def generate_mapping_table( gff_file ):
 							parent = parent.split(';')[0]
 						transcript2gene.update( { ID: parent } )
 					except:
-						print line
+						print(line)
 			line = f.readline()
 	return transcript2gene
 
@@ -86,7 +86,7 @@ def generate_output_file( output_file, data ):
 	
 	with open( output_file, "w" ) as out:
 		out.write( "\t".join( [ timestr ] + samples ) + '\n' )
-		for gene in list( sorted( list( data.values()[0].keys() ) ) ):
+		for gene in list(sorted(list(data.values())[0].keys())):
 			new_line = [ gene ]
 			for sample in samples:
 				new_line.append( data[ sample ][ gene ] )
