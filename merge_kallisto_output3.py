@@ -1,15 +1,16 @@
 ### Boas Pucker ###
 ### Milan Borchert ###
 ### b.pucker@tu-bs.de ###
-### v0.32 ###
+### v0.33 ###
 
 __usage__ = """
 					python3 merge_kallisto_output3.py
 					--in <INPUT_FOLDER>
-					--gff <GFF_FILE>
 					--tpms <TPM_OUTPUT_FILE>
 					--counts <COUNTS_OUTPUT_FILE>
 					
+					optional:
+					--gff <GFF_FILE>
 					bug reports and feature requests: bpucker@cebitec.uni-bielefeld.de
 					"""
 
@@ -97,7 +98,9 @@ def main( arguments ):
 	"""! @brief run everything """
 	
 	data_input_dir = arguments[ arguments.index( '--in' )+1 ]
-	gff_file = arguments[ arguments.index( '--gff' )+1 ]
+	if data_input_dir[-1] != "/":
+		data_input_dir += "/"
+	
 	try:
 	    timestr = time.strftime("%Y_%m_%d_")
 	except ModuleNotFoundError:
@@ -118,7 +121,11 @@ def main( arguments ):
 	else:
 		tpm_output_file = False
 	
-	transcript2gene = generate_mapping_table( gff_file )
+	if '--gff' in arguments:
+		gff_file = arguments[ arguments.index( '--gff' )+1 ]
+		transcript2gene = generate_mapping_table( gff_file )
+	else:
+		transcript2gene = {}
 	sys.stdout.write( "number of mapped transcripts: " + str( len( transcript2gene.keys() ) ) + "\n" )
 	sys.stdout.flush()
 	
@@ -145,9 +152,9 @@ def main( arguments ):
 		generate_output_file( tpm_output_file, tpm_data )
 
 
-if '--in' in sys.argv and '--gff' in sys.argv and '--tpms' in sys.argv:
+if '--in' in sys.argv and '--tpms' in sys.argv:
 	main( sys.argv )
-elif '--in' in sys.argv and '--gff' in sys.argv and '--counts' in sys.argv:
+elif '--in' in sys.argv and '--counts' in sys.argv:
 	main( sys.argv )
 else:
 	sys.exit( __usage__ )
