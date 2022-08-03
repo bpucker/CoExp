@@ -1,6 +1,6 @@
 ### Boas Pucker ###
 ### b.pucker@tu-braunschweig.de ###
-### v0.135 ###
+### v0.136 ###
 
 __usage__ = """
 					python coexp3.py
@@ -67,7 +67,9 @@ def compare_candidates_against_all( candidate, gene_expression, rcut, pcut, expc
 						coexpressed_genes.append( { 'id': gene2, 'correlation': r, 'p_value': p } )
 			except ValueError:
 				errors.append( candidate )
-	print ( "ERRORS: " + ";".join( list( set( errors ) ) ) )
+	
+	if len( errors ) > 0:
+		print ( "ERRORS: " + ";".join( list( set( errors ) ) ) )
 	return coexpressed_genes
 
 
