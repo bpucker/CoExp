@@ -1,6 +1,6 @@
 ### Boas Pucker ###
 ### bpucker@cebitec.uni-bielefeld.de ###
-### v0.2 ###
+### v0.3 ###
 
 __usage__ = """
 						python3 filter_RNAseq_samples.py
@@ -11,7 +11,8 @@ __usage__ = """
 						--max <MAX_PERCENT_EXPRESSION_ON_TOP100>
 						
 						optional:
-						--mincounts
+						--mincounts <MIN_READ_NUMBER>[1000000]
+						--black <ID_BLACK_LIST>
 						"""
 
 import os, sys, glob
@@ -45,6 +46,19 @@ def load_all_TPMs( exp_file ):
 	return data, genes
 
 
+def  load_black_IDs( black_list_file ):
+	"""! @brief load IDs from given black list """
+	
+	black_list = {}
+	with open( black_list_file, "r" ) as f:
+		line = f.readline()
+		while line:
+			if len( line ) > 3:
+				black_list.update( { line.strip(): None } )
+			line = f.readline()	
+	return black_list
+
+
 def main( arguments ):
 	"""! @brief run everything """
 	
@@ -66,6 +80,12 @@ def main( arguments ):
 	else:
 		min_counts = 1000000
 	
+	if '--black' in arguments:
+		black_list_file = arguments[ arguments.index('--black')+1 ]
+		black_list = load_black_IDs( black_list_file )
+	else:
+		black_list = {}
+	
 	# --- run analysis of all data in folder/file --- #
 	doc_file = output_file + ".doc"
 	valid_samples = []
@@ -78,22 +98,27 @@ def main( arguments ):
 			selection = sorted( TPM_data[ key ] )
 			counts = sum( count_data[ key ] )	#calculate counts per library
 			if counts >= min_counts:	#check for sufficient library size
-				try:
-					val = 100.0 * sum( selection[-100:] ) / sum( selection )
-				except ZeroDivisionError:
-					val = 0
-				new_line.append( val )
-				if min_cutoff < val < max_cutoff:
-					valid_samples.append( key )
-				if len( selection ) > 500 and val > 0:
-					new_line.append( 100.0 * sum( selection[-500:] ) / sum( selection ) )
-				else:
-					new_line.append( "n/a" )
-				if len( selection ) > 1000 and val > 0:
-					new_line.append( 100.0 * sum( selection[-1000:] ) / sum( selection ) )
-				else:
-					new_line.append( "n/a" )
-				out.write( "\t".join( list( map( str, new_line ) ) ) + "\n" )
+				try:	#check for ID presence on black list
+					black_list[ key ]
+					new_line.append( "ID on black list" )
+					out.write( "\t".join( list( map( str, new_line ) ) ) + "\n" )
+				except KeyError:
+					try:
+						val = 100.0 * sum( selection[-100:] ) / sum( selection )
+					except ZeroDivisionError:
+						val = 0
+					new_line.append( val )
+					if min_cutoff < val < max_cutoff:
+						valid_samples.append( key )
+					if len( selection ) > 500 and val > 0:
+						new_line.append( 100.0 * sum( selection[-500:] ) / sum( selection ) )
+					else:
+						new_line.append( "n/a" )
+					if len( selection ) > 1000 and val > 0:
+						new_line.append( 100.0 * sum( selection[-1000:] ) / sum( selection ) )
+					else:
+						new_line.append( "n/a" )
+					out.write( "\t".join( list( map( str, new_line ) ) ) + "\n" )
 			else:
 				new_line.append( "insufficient counts: " + str( counts ) )
 				out.write( "\t".join( list( map( str, new_line ) ) ) + "\n" )
