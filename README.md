@@ -118,7 +118,7 @@ Optional:
 `--max` specifies the maximal percentage of expression that needs to fall on the top100 transcripts. Default: 80%.
 
 
-## Reference ##
+## References ##
 
 Pucker B, Iorizzo M (2023) Apiaceae FNS I originated from F3H through tandem gene duplication. PLOS ONE 18(1): e0280155. doi:[10.1371/journal.pone.0280155](https://doi.org/10.1371/journal.pone.0280155).
 
