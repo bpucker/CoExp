@@ -1,7 +1,7 @@
 ### Boas Pucker ###
 ### Milan Borchert ###
 ### b.pucker@tu-bs.de ###
-### v0.37 ###
+### v0.4 ###
 
 __usage__ = """
 					python3 kallisto_pipeline3.py
@@ -64,6 +64,15 @@ def get_data_for_jobs_to_run( read_file_folders, final_output_folder, index_file
 							if not os.path.isfile( read_file2 ):
 								#print "ERROR: file missing - " + read_file2
 								PE_status = False
+						else:
+							read_file1 = folder + "/" + ID + "_1.fq.gz"
+							if os.path.isfile( read_file1 ):
+								PE_status = True
+								SRA = True
+								read_file2 = folder + "/" + ID + "_2.fq.gz"
+								if not os.path.isfile( read_file2 ):
+									#print "ERROR: file missing - " + read_file2
+									PE_status = False
 		if not SRA:
 			read_file2 = folder + "/" + ID + "_R2_001.fastq.gz"
 			if not os.path.isfile( read_file2 ):
