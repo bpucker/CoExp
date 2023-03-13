@@ -1,6 +1,6 @@
 ### Boas Pucker ###
 ### bpucker@cebitec.uni-bielefeld.de ###
-### v0.3 ###
+### v0.4 ###
 
 __usage__ = """
 						python3 filter_RNAseq_samples.py
@@ -33,6 +33,8 @@ def load_all_TPMs( exp_file ):
 		else:
 			headers = [ headers ]
 		if headers[0] == "gene":
+			headers = headers[1:]
+		elif headers[0] == exp_file.split('/')[-1][:10]:
 			headers = headers[1:]
 		for header in headers:
 			data.update( { header: [] } )
