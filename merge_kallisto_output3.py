@@ -1,7 +1,7 @@
 ### Boas Pucker ###
 ### Milan Borchert ###
 ### b.pucker@tu-bs.de ###
-### v0.33 ###
+### v0.37 ###
 
 __usage__ = """
 					python3 merge_kallisto_output3.py
@@ -77,12 +77,16 @@ def map_counts_to_genes( transcript2gene, counts ):
 	return gene_counts
 
 
-def generate_output_file( output_file, data ):
+def generate_output_file( output_file, data, date_status ):
 	"""! @brief generate output file for given data dictionary """
-	try:
-	    timestr = time.strftime("%Y_%m_%d")
-	except ModuleNotFoundError:
-	    timestr = ""
+	
+	if date_status:
+		try:
+			timestr = time.strftime("%Y_%m_%d")
+		except ModuleNotFoundError:
+			timestr = ""
+	else:
+		timestr = ""
 	samples = list( sorted( list( data.keys() ) ) )
 	
 	with open( output_file, "w" ) as out:
@@ -98,13 +102,21 @@ def main( arguments ):
 	"""! @brief run everything """
 	
 	data_input_dir = arguments[ arguments.index( '--in' )+1 ]
+	if '--date' in arguments:
+		date_status = True
+	else:
+		date_status = False
+	
 	if data_input_dir[-1] != "/":
 		data_input_dir += "/"
 	
-	try:
-	    timestr = time.strftime("%Y_%m_%d_")
-	except ModuleNotFoundError:
-	    timestr = ""
+	if date_status:
+		try:
+			timestr = time.strftime("%Y_%m_%d_")
+		except ModuleNotFoundError:
+			timestr = ""
+	else:
+		timestr = ""
 	# Create date is added to filename for both output files 
 	if '--counts' in arguments:
 		counts_output_file = arguments[ arguments.index( '--counts' )+1 ]
@@ -147,9 +159,9 @@ def main( arguments ):
 		tpm_data.update( { ID: gene_tpms } )
 	
 	if counts_output_file:
-		generate_output_file( counts_output_file, count_data )
+		generate_output_file( counts_output_file, count_data, date_status )
 	if tpm_output_file:
-		generate_output_file( tpm_output_file, tpm_data )
+		generate_output_file( tpm_output_file, tpm_data, date_status )
 
 
 if '--in' in sys.argv and '--tpms' in sys.argv:

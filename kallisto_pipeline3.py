@@ -1,7 +1,7 @@
 ### Boas Pucker ###
 ### Milan Borchert ###
 ### b.pucker@tu-bs.de ###
-### v0.4 ###
+### v0.42 ###
 
 __usage__ = """
 					python3 kallisto_pipeline3.py
@@ -22,7 +22,7 @@ import os, sys, glob, time, subprocess
 
 # --- end of imports --- #
 
-def get_data_for_jobs_to_run( read_file_folders, final_output_folder, index_file, tmp_cluster_folder ):
+def get_data_for_jobs_to_run( read_file_folders, final_output_folder, index_file, tmp_cluster_folder, date_status ):
 	"""! @brief collect all infos to run jobs """
 	
 	jobs_to_do = []
@@ -73,6 +73,18 @@ def get_data_for_jobs_to_run( read_file_folders, final_output_folder, index_file
 								if not os.path.isfile( read_file2 ):
 									#print "ERROR: file missing - " + read_file2
 									PE_status = False
+							else:
+								try:
+									read_file1 = glob.glob( folder + "/*_R1_001.fastq.gz" )[0]
+									if os.path.isfile( read_file1 ):
+										PE_status = True
+										SRA = True
+										read_file2 = glob.glob( folder + "/*_R2_001.fastq.gz" )[0]
+										if not os.path.isfile( read_file2 ):
+											#print "ERROR: file missing - " + read_file2
+											PE_status = False
+								except:
+									pass
 		if not SRA:
 			read_file2 = folder + "/" + ID + "_R2_001.fastq.gz"
 			if not os.path.isfile( read_file2 ):
@@ -97,10 +109,13 @@ def get_data_for_jobs_to_run( read_file_folders, final_output_folder, index_file
 		if not os.path.exists( output_dir ):
 			os.makedirs( output_dir ) 
 		tmp_result_file = output_dir + "abundance.tsv"
-		try:
-		    timestr = time.strftime("%Y_%m_%d_")
-		except ModuleNotFoundError:
-		    timestr = ""
+		if date_status:
+			try:
+				timestr = time.strftime("%Y_%m_%d_")
+			except ModuleNotFoundError:
+				timestr = ""
+		else:
+			timestr = ""
 		final_result_file = final_output_folder + timestr + ID + ".tsv"
 		if os.path.isfile( final_result_file ):
 			status = False
@@ -147,6 +162,11 @@ def main( arguments ):
 			threads = 10
 	else:
 		threads = 10
+		
+	if '--date' in arguments:
+		date_status = True
+	else:
+		date_status = False
 	
 	if final_output_folder[-1] != "/":
 		final_output_folder += "/"
@@ -165,7 +185,7 @@ def main( arguments ):
 	
 	# --- prepare jobs to run --- #
 	index_file = tmp_cluster_folder + "index"
-	jobs_to_run = get_data_for_jobs_to_run( single_read_file_folders, final_output_folder, index_file, tmp_cluster_folder )
+	jobs_to_run = get_data_for_jobs_to_run( single_read_file_folders, final_output_folder, index_file, tmp_cluster_folder, date_status )
 	sys.stdout.write( "number of jobs to run: " + str( len( jobs_to_run ) ) + "\n" )
 	sys.stdout.flush()
 	
