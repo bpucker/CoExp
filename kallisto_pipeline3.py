@@ -1,7 +1,7 @@
 ### Boas Pucker ###
 ### Milan Borchert ###
 ### b.pucker@tu-bs.de ###
-### v0.42 ###
+### v0.45 ###
 
 __usage__ = """
 					python3 kallisto_pipeline3.py
@@ -119,6 +119,8 @@ def get_data_for_jobs_to_run( read_file_folders, final_output_folder, index_file
 		final_result_file = final_output_folder + timestr + ID + ".tsv"
 		if os.path.isfile( final_result_file ):
 			status = False
+		if os.path.isfile( final_result_file + ".gz" ):
+			status = False
 		if status:
 			jobs_to_do.append( { 'r1': read_file1, 'r2': read_file2, 'out': output_dir, 'index': index_file, 'tmp': tmp_result_file, 'fin': final_result_file, "ID": ID } )
 	return jobs_to_do
@@ -131,14 +133,20 @@ def job_executer( jobs_to_run, kallisto, threads ):
 		sys.stdout.write( "running job " + str( idx+1 ) + "/" + str( len( jobs_to_run ) ) + " - " + job["ID"] + "\n" )
 		sys.stdout.flush()
 		
+		# --- run analysis --- #
 		if job['r2']:
 			cmd2 = " ".join( [ kallisto, "quant", "--index="+job['index'], "--output-dir="+job['out'], "--threads "+str( threads ), job['r1'], job['r2'] ] )
 		else:
 			cmd2 = " ".join( [ kallisto, "quant", "--index="+job['index'], "--single -l 200 -s 100", "--output-dir="+job['out'], "--threads "+str( threads ), job['r1'] ] )
 		p = subprocess.Popen( args= cmd2, shell=True )
 		p.communicate()
-
+		
+		# --- copy result file --- #
 		p = subprocess.Popen( args= "cp " + job["tmp"] + " " + job["fin"] , shell=True )
+		p.communicate()
+		
+		# --- compress result file (count table) --- #
+		p = subprocess.Popen( args= "gzip " + job['fin'], shell=True )
 		p.communicate()
 
 

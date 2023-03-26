@@ -1,7 +1,7 @@
 ### Boas Pucker ###
 ### Milan Borchert ###
 ### b.pucker@tu-bs.de ###
-### v0.37 ###
+### v0.38 ###
 
 __usage__ = """
 					python3 merge_kallisto_output3.py
@@ -11,11 +11,15 @@ __usage__ = """
 					
 					optional:
 					--gff <GFF_FILE>
-					bug reports and feature requests: bpucker@cebitec.uni-bielefeld.de
+					bug reports and feature requests: b.pucker@tu-bs.de
 					"""
 
 
 import os, sys, glob, time
+try:
+	import gzip
+except ImportError:
+	pass
 
 # --- end of imports --- #
 
@@ -24,14 +28,24 @@ def load_counttable( counttable ):
 	
 	counts = {}
 	tpms = {}
-	with open( counttable, "r" ) as f:
-		f.readline()	#remove header
-		line = f.readline()
-		while line:
-			parts = line.strip().split('\t')
-			counts.update( { parts[0]: float( parts[3] ) } )
-			tpms.update( { parts[0]: float( parts[4] ) } )
+	if counttable[-4:] == ".tsv":
+		with open( counttable, "r" ) as f:
+			f.readline()	#remove header
 			line = f.readline()
+			while line:
+				parts = line.strip().split('\t')
+				counts.update( { parts[0]: float( parts[3] ) } )
+				tpms.update( { parts[0]: float( parts[4] ) } )
+				line = f.readline()
+	else:
+		with gzip.open( counttable, "rb" ) as f:
+			f.readline()	#remove header
+			line = f.readline().decode("utf-8")
+			while line:
+				parts = line.strip().split('\t')
+				counts.update( { parts[0]: float( parts[3] ) } )
+				tpms.update( { parts[0]: float( parts[4] ) } )
+				line = f.readline().decode("utf-8")
 	return counts, tpms
 
 
@@ -141,7 +155,7 @@ def main( arguments ):
 	sys.stdout.write( "number of mapped transcripts: " + str( len( transcript2gene.keys() ) ) + "\n" )
 	sys.stdout.flush()
 	
-	counttables = glob.glob( data_input_dir + "*.tsv" )
+	counttables = glob.glob( data_input_dir + "*.tsv" ) + glob.glob( data_input_dir + "*.tsv.gz" )
 	sys.stdout.write( "number of detected counttables: " + str( len( counttables ) ) + "\n" )
 	sys.stdout.flush()
 
