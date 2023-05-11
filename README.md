@@ -1,5 +1,7 @@
 [![DOI](https://zenodo.org/badge/490976583.svg)](https://zenodo.org/badge/latestdoi/490976583)
 
+### CoExp is available on our [webserver](http://193.175.249.50/CoExp/) ###
+
 # CoExp
 CoExp allows the identification of genes that are co-expressed with a set of genes of interest. A list of genes and a count table are provided. A co-expression analysis is performed for each gene in the list. All pairs of genes above a certain cutoff are reported in the result table.
 
