@@ -24,6 +24,7 @@ Optional:
 --rcut     STR    Minimal correlation cutoff
 --pcut     STR    Maximal p-value cutoff
 --expcut   STR    Expression cutoff
+--verbose         Activates detailed output
 ```
 
 `--in` specifies a text file containing the genes of interest. Each line lists one gene ID. These IDs need to match the IDs in the first column of the count table.
@@ -39,6 +40,8 @@ Optional:
 `--pcut` specifies the maximal p-value that serves as a cutoff when reporting co-expressed gene pairs. Default: 0.05.
 
 `--expcut` specifies the minimal cumulative expression across all samples. Only genes above this cutoff are considered for the co-expression analysis. Default: 5.
+
+`--verbose` does not require any additional input, but will activate printing of additional details during the process.
 
 
 ## RNA-seq data processing ##
