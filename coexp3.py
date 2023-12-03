@@ -1,6 +1,6 @@
 ### Boas Pucker ###
 ### b.pucker@tu-braunschweig.de ###
-### v0.136 ###
+### v0.2 ###
 
 __usage__ = """
 					python coexp3.py
@@ -13,6 +13,7 @@ __usage__ = """
 					--rcut <MIN_CORRELATION_CUTOFF>
 					--pcut <MAX_P_VALUE_CUTOFF>
 					--expcut <MIN_EXPRESSION_CUTOFF>
+					--verbose <ACTIVATES_DETAILED_OUTPUT>
 					
 					bug reports and feature requests: bpucker@cebitec.uni-bielefeld.de
 					"""
@@ -41,8 +42,12 @@ def load_expression_values( filename ):
 	return expression_data
 
 
-def compare_candidates_against_all( candidate, gene_expression, rcut, pcut, expcut ):
+def compare_candidates_against_all( candidate, gene_expression, rcut, pcut, expcut, verbose ):
 	"""! @brief compare candidate gene expression against all genes to find co-expressed genes """
+	
+	if verbose:
+		sys.stdout.write( candidate + "\n" )
+		sys.stdout.flush()
 	
 	tissues = list( sorted( list( gene_expression[ list( gene_expression.keys() )[0] ].keys() ) ) )
 	coexpressed_genes = []
@@ -60,8 +65,16 @@ def compare_candidates_against_all( candidate, gene_expression, rcut, pcut, expc
 						values.append( [ x, y ] )
 				except KeyError:
 					pass
+			
+			if verbose:
+				sys.stdout.write( str( values ) + "\n" )
+				sys.stdout.flush()
+			
 			try:
 				r, p = stats.spearmanr( values )
+				if verbose:
+					sys.stdout.write( candidate + " vs. " + gene2 + "; r: " + str( r ) + "; p:" + str( p ) + "\n" )
+					sys.stdout.flush()
 				if not math.isnan( r ) and total_expression > expcut:
 					if r > rcut and p < pcut:
 						coexpressed_genes.append( { 'id': gene2, 'correlation': r, 'p_value': p } )
@@ -69,7 +82,8 @@ def compare_candidates_against_all( candidate, gene_expression, rcut, pcut, expc
 				errors.append( candidate )
 	
 	if len( errors ) > 0:
-		print ( "ERRORS: " + ";".join( list( set( errors ) ) ) )
+		sys.stdout.write ( "ERRORS: " + ";".join( list( set( errors ) ) ) )
+		sys.stdout.flush()
 	return coexpressed_genes
 
 
@@ -136,6 +150,11 @@ def main( arguments ):
 	else:
 		expcut = 5
 	
+	if "--verbose" in arguments:
+		verbose = True
+	else:
+		verbose = False
+	
 	#correlation method?
 	
 	gene_expression = load_expression_values( expression_file )
@@ -151,11 +170,15 @@ def main( arguments ):
 			high_impact_candidates.append( candidate )
 			line = f.readline()
 	
+	if verbose:
+		sys.stdout.write ( "CANDIDATES:" + "\n".join( list( high_impact_candidates ) ) + "\n" )
+		sys.stdout.flush()
+	
 	number_of_genes = float( len( list( gene_expression.keys() ) ) )
 	for candidate in high_impact_candidates:
 		coexpression_output_file = output_prefix + candidate + ".txt"
 		if not os.path.isfile( coexpression_output_file ):
-			coexpressed_genes = sorted( compare_candidates_against_all( candidate, gene_expression, rcut, pcut, expcut ), key=itemgetter( 'correlation' ) )[::-1]
+			coexpressed_genes = sorted( compare_candidates_against_all( candidate, gene_expression, rcut, pcut, expcut, verbose ), key=itemgetter( 'correlation' ) )[::-1]
 			with open( coexpression_output_file, "w" ) as out:
 				out.write( 'CandidateGene\tGeneID\tSpearmanCorrelation\tadjusted_p-value\tFunctionalAnnotation\n' )
 				for entry in coexpressed_genes:
