@@ -1,7 +1,6 @@
 ### Boas Pucker ###
 ### b.pucker@tu-braunschweig.de ###
-### v0.2 ###
-
+### v0.21 ###
 
 __usage__ = """
 					python coexp3.py
@@ -178,15 +177,21 @@ def main( arguments ):
 	number_of_genes = float( len( list( gene_expression.keys() ) ) )
 	for candidate in high_impact_candidates:
 		coexpression_output_file = output_prefix + candidate + ".txt"
+		coexpression_html_output_file = output_prefix + candidate + ".html"
 		if not os.path.isfile( coexpression_output_file ):
 			coexpressed_genes = sorted( compare_candidates_against_all( candidate, gene_expression, rcut, pcut, expcut, verbose ), key=itemgetter( 'correlation' ) )[::-1]
 			with open( coexpression_output_file, "w" ) as out:
-				out.write( 'CandidateGene\tGeneID\tSpearmanCorrelation\tadjusted_p-value\tFunctionalAnnotation\n' )
-				for entry in coexpressed_genes:
-					try:
-						out.write( "\t".join( map( str, [ candidate, entry['id'], entry['correlation'], entry['p_value'] * number_of_genes, annotation_mapping_table[ entry['id'] ] ] ) ) + '\n' )
-					except KeyError:
-						out.write( "\t".join( map( str, [ candidate, entry['id'], entry['correlation'], entry['p_value'] * number_of_genes, "N/A" ] ) ) + '\n' )
+				with open( coexpression_html_output_file, "w" ) as html_out:	#generate an HTML document in addition to the normal text file
+					out.write( 'CandidateGene\tGeneID\tSpearmanCorrelation\tadjusted_p-value\tFunctionalAnnotation\n' )
+					html_out.write( '<html>\n<table>\n<tr><th>CandidateGene</th><th>GeneID</th><th>SpearmanCorrelation</th><th>adjusted_p-value</th><th>FunctionalAnnotation</th></tr>\n' )
+					for entry in coexpressed_genes:
+						try:
+							out.write( "\t".join( map( str, [ candidate, entry['id'], entry['correlation'], entry['p_value'] * number_of_genes, annotation_mapping_table[ entry['id'] ] ] ) ) + '\n' )
+							html_out.write( "<tr><td>" + candidate + "</td><td>" + entry['id'] + "</td><td>" + str( entry['correlation'] ) + "</td><td>" + str( entry['p_value'] * number_of_genes ) + "</td><td>" + annotation_mapping_table[ entry['id'] ] +"</td></tr>\n" )	#tr for row; td for each element
+						except KeyError:
+							out.write( "\t".join( map( str, [ candidate, entry['id'], entry['correlation'], entry['p_value'] * number_of_genes, "N/A" ] ) ) + '\n' )
+							html_out.write( "<tr><td>" + candidate + "</td><td>" + entry['id'] + "</td><td>" + str( entry['correlation'] ) + "</td><td>" + str( entry['p_value'] * number_of_genes ) + "</td><td>n/a</td></tr>\n" )	#tr for row; td for each element
+					html_out.write( "</table>\n</html>\n" )
 
 
 if '--exp' in sys.argv and '--out' in sys.argv and '--in' in sys.argv:
