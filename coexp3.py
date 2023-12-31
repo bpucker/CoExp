@@ -1,6 +1,6 @@
 ### Boas Pucker ###
 ### b.pucker@tu-braunschweig.de ###
-### v0.21 ###
+### v0.23 ###
 
 __usage__ = """
 					python coexp3.py
@@ -22,6 +22,7 @@ from operator import itemgetter
 import numpy as np
 import re, math, sys, os
 from scipy import stats
+from table import text_open, html_open
 
 # ---- end of imports --- #
 
@@ -174,25 +175,19 @@ def main( arguments ):
 		sys.stdout.write ( "CANDIDATES:" + "\n".join( list( high_impact_candidates ) ) + "\n" )
 		sys.stdout.flush()
 	
-	number_of_genes = float( len( list( gene_expression.keys() ) ) )
-	for candidate in high_impact_candidates:
-		coexpression_output_file = output_prefix + candidate + ".txt"
-		coexpression_html_output_file = output_prefix + candidate + ".html"
-		if not os.path.isfile( coexpression_output_file ):
-			coexpressed_genes = sorted( compare_candidates_against_all( candidate, gene_expression, rcut, pcut, expcut, verbose ), key=itemgetter( 'correlation' ) )[::-1]
-			with open( coexpression_output_file, "w" ) as out:
-				with open( coexpression_html_output_file, "w" ) as html_out:	#generate an HTML document in addition to the normal text file
-					out.write( 'CandidateGene\tGeneID\tSpearmanCorrelation\tadjusted_p-value\tFunctionalAnnotation\n' )
-					html_out.write( '<html>\n<table>\n<tr><th>CandidateGene</th><th>GeneID</th><th>SpearmanCorrelation</th><th>adjusted_p-value</th><th>FunctionalAnnotation</th></tr>\n' )
-					for entry in coexpressed_genes:
-						try:
-							out.write( "\t".join( map( str, [ candidate, entry['id'], entry['correlation'], entry['p_value'] * number_of_genes, annotation_mapping_table[ entry['id'] ] ] ) ) + '\n' )
-							html_out.write( "<tr><td>" + candidate + "</td><td>" + entry['id'] + "</td><td>" + str( entry['correlation'] ) + "</td><td>" + str( entry['p_value'] * number_of_genes ) + "</td><td>" + annotation_mapping_table[ entry['id'] ] +"</td></tr>\n" )	#tr for row; td for each element
-						except KeyError:
-							out.write( "\t".join( map( str, [ candidate, entry['id'], entry['correlation'], entry['p_value'] * number_of_genes, "N/A" ] ) ) + '\n' )
-							html_out.write( "<tr><td>" + candidate + "</td><td>" + entry['id'] + "</td><td>" + str( entry['correlation'] ) + "</td><td>" + str( entry['p_value'] * number_of_genes ) + "</td><td>n/a</td></tr>\n" )	#tr for row; td for each element
-					html_out.write( "</table>\n</html>\n" )
-
+	number_of_genes = float(len(list(gene_expression.keys())))
+	with html_open(output_prefix + "SUMMARY.html", 'w') as html_out:
+		html_out.begin_section("CandidateGene", high_impact_candidates)
+		for candidate in high_impact_candidates:
+			html_out.begin_table(id=candidate)
+			with text_open(output_prefix + f"{candidate}.txt", 'w') as text_out:
+				text_out.add_header("CandidateGene", "GeneID", "SpearmanCorrelation", "adjusted_p-value", "FunctionalAnnotation")
+				html_out.add_header(                 "GeneID", "SpearmanCorrelation", "adjusted_p-value", "FunctionalAnnotation")
+				for entry in sorted(compare_candidates_against_all(candidate, gene_expression, rcut, pcut, expcut, verbose), key=itemgetter("correlation"))[::-1]:
+					text_out.add_row(candidate, entry["id"], entry["correlation"], entry["p_value"]*number_of_genes, annotation_mapping_table.get(entry["id"], "N/A"))
+					html_out.add_row(           entry["id"], entry["correlation"], entry["p_value"]*number_of_genes, annotation_mapping_table.get(entry["id"], "N/A"))
+			html_out.end_table()
+		html_out.end_section()
 
 if '--exp' in sys.argv and '--out' in sys.argv and '--in' in sys.argv:
 	main( sys.argv )
