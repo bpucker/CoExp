@@ -1,6 +1,6 @@
 ### Andreas Rempel ###
 ### andreas.rempel@uni-bielefeld.de ###
-### v0.23 ###
+### v0.24 ###
 
 class text_open:
   def __enter__(self):
@@ -84,6 +84,24 @@ class html_open:
     self.file.write( '    select:focus {\n' )
     self.file.write( '      border-color: #004080;\n' )
     self.file.write( '      outline: none;\n' )
+    self.file.write( '    }\n' )
+    self.file.write( '    a:link {\n' )
+    self.file.write( '      color: #1529E1;\n' )
+    self.file.write( '    }\n' )
+    self.file.write( '    a:link:hover {\n' )
+    self.file.write( '      color: #2337EE;\n' )
+    self.file.write( '    }\n' )
+    self.file.write( '    a:link:active {\n' )
+    self.file.write( '      color: #091DD5;\n' )
+    self.file.write( '    }\n' )
+    self.file.write( '    a:visited {\n' )
+    self.file.write( '      color: #563FAC;\n' )
+    self.file.write( '    }\n' )
+    self.file.write( '    a:visited:hover {\n' )
+    self.file.write( '      color: #644DB9;\n' )
+    self.file.write( '    }\n' )
+    self.file.write( '    a:visited:active {\n' )
+    self.file.write( '      color: #4B349F;\n' )
     self.file.write( '    }\n' )
     self.file.write( '  </style>\n' )
   

@@ -1,6 +1,6 @@
 ### Boas Pucker ###
 ### b.pucker@tu-braunschweig.de ###
-### v0.23 ###
+### v0.24 ###
 
 __usage__ = """
 					python coexp3.py
@@ -105,6 +105,54 @@ def load_annotation( annotation_file ):
 	return annotation_mapping_table
 
 
+def search_ncbi( gene_ids ):
+	"""! @brief search list of gene IDs in NCBI """
+	
+	def normalize( gene_id ):
+		if '.' in gene_id:
+			(accession, version) = gene_id.rsplit('.', 1)
+			if len(version) < 3: return accession
+	more_ids = []
+	for gene_id in gene_ids:
+		if id := normalize(gene_id): more_ids.append(id)
+	
+	try:
+		import requests, random
+		from xml.etree import ElementTree as XML
+		
+		random.shuffle(all_ids := gene_ids + more_ids)
+		N = math.ceil(len(all_ids) / 18321)
+		L = math.ceil(len(all_ids) / N)
+		batches = (all_ids[i*L:(i+1)*L] for i in range(N))
+		
+		url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+		found = set(); not_found = set()
+		
+		for batch in batches:
+			query_terms = (f"{id}[Gene Name]" for id in batch)
+			args = { "db": "gene", "term": " OR ".join(query_terms) }
+			try:
+				response = XML.fromstring(requests.post(url, data=args).content)
+			except:
+				response = XML.fromstring(requests.post(url, data=args).content)
+			
+			found    .update({elem.text.rsplit('[', 1)[0] for elem in response.findall(".//Term")})
+			not_found.update({elem.text.rsplit('[', 1)[0] for elem in response.findall(".//PhraseNotFound")})
+		
+		def reference( gene_id ):
+			if gene_id in found and gene_id not in not_found: return gene_id
+			elif new_id := normalize(gene_id):
+				if new_id in found and new_id not in not_found: return new_id
+	except:
+		def reference( gene_id ): return None
+	
+	def hyperlink( gene_id, annotation ):
+		if id := reference(gene_id):
+			return f'<a href="https://www.ncbi.nlm.nih.gov/gene/?term={id}[Gene Name]" target="_blank">{annotation}</a>'
+		else: return annotation
+	return hyperlink
+
+
 def main( arguments ):
 	"""! @brief run everything """
 	
@@ -159,6 +207,7 @@ def main( arguments ):
 	#correlation method?
 	
 	gene_expression = load_expression_values( expression_file )
+	hyperref = search_ncbi( list( gene_expression.keys() ) )
 	
 	high_impact_candidates = [ ]
 	
@@ -183,9 +232,11 @@ def main( arguments ):
 			with text_open(output_prefix + f"{candidate}.txt", 'w') as text_out:
 				text_out.add_header("CandidateGene", "GeneID", "SpearmanCorrelation", "adjusted_p-value", "FunctionalAnnotation")
 				html_out.add_header(                 "GeneID", "SpearmanCorrelation", "adjusted_p-value", "FunctionalAnnotation")
-				for entry in sorted(compare_candidates_against_all(candidate, gene_expression, rcut, pcut, expcut, verbose), key=itemgetter("correlation"))[::-1]:
-					text_out.add_row(candidate, entry["id"], entry["correlation"], entry["p_value"]*number_of_genes, annotation_mapping_table.get(entry["id"], "N/A"))
-					html_out.add_row(           entry["id"], entry["correlation"], entry["p_value"]*number_of_genes, annotation_mapping_table.get(entry["id"], "N/A"))
+				coexpressed_genes = compare_candidates_against_all(candidate, gene_expression, rcut, pcut, expcut, verbose)
+				for entry in sorted(coexpressed_genes, key=itemgetter("correlation"))[::-1]:
+					annotation = annotation_mapping_table.get(entry["id"], "N/A"); ncbi_link = hyperref(entry["id"], annotation)
+					text_out.add_row(candidate, entry["id"], entry["correlation"], entry["p_value"]*number_of_genes, annotation)
+					html_out.add_row(           entry["id"], entry["correlation"], entry["p_value"]*number_of_genes, ncbi_link)
 			html_out.end_table()
 		html_out.end_section()
 
