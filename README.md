@@ -127,5 +127,5 @@ Optional:
 
 Pucker B, Iorizzo M (2023) Apiaceae FNS I originated from F3H through tandem gene duplication. PLOS ONE 18(1): e0280155. doi:[10.1371/journal.pone.0280155](https://doi.org/10.1371/journal.pone.0280155).
 
-Pucker B., Walker-Hale N., Yim W.C., Cushman J.C., Crumm A., Yang Y., Brockington S. (2022). Evolutionary blocks to anthocyanin accumulation and the loss of an anthocyanin carrier protein in betalain-pigmented Caryophyllales. bioRxiv 2022.10.19.512958; doi:[10.1101/2022.10.19.512958](https://doi.org/10.1101/2022.10.19.512958).
+Pucker, B., Walker-Hale, N., Dzurlic, J., Yim, W.C., Cushman, J.C., Crum, A., Yang, Y. and Brockington, S.F. (2024), Multiple mechanisms explain loss of anthocyanins from betalain-pigmented Caryophyllales, including repeated wholesale loss of a key anthocyanidin synthesis enzyme. New Phytol, 241: 471-489. doi:[10.1111/nph.19341](https://doi.org/10.1111/nph.19341).
 
