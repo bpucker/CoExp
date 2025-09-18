@@ -103,6 +103,8 @@ Optional:
 
 
 ### filter_RNAseq_samples.py ###
+This script checks the constructed count table to ensure that RNA-seq data sets are really suitable for quantitative analysis. It is based on the assumption that about 50% of all RNA-seq reads should be assigned to the 100 most abundant transcripts. If reads are equally distributed across all transcripts, the sample is not suitable for quantitative analyses (e.g. a mis-labeled DNA sequencing sample). This script can produce a clean count table, which only contains samples passing the filter.
+
 ```
 Usage
 python3 filter_RNAseq_samples.py --tpms <FILE> --counts <FILE> --out <DIR>
