@@ -9,6 +9,7 @@ This repository also contains several scripts required to process RNA-seq data s
 
 
 ## CoExp analysis ##
+This script conducts the actual coexpression analysis based on a provided count table and genes of interest.
 
 ```
 Usage
@@ -47,6 +48,8 @@ Optional:
 ## RNA-seq data processing ##
 
 ### kallisto_pipeline3.py ###
+This wrapper scripts allows to run kallisto effectively across a large number of datasets retrieved from the Sequence Read Archive. It is expected that pairs of FASTQ files are located in subfolders. Downloading RNA-seq data with fastq-dump results in the structure that serves as input for this script.
+
 ```
 Usage
 python3 kallisto_pipeline3.py --cds <FILE> --reads <DIR> --out <DIR> --tmp <DIR>
@@ -76,6 +79,8 @@ Optional:
 
 
 ### merge_kallisto_output3.py ###
+This script takes the individual result files produced by kallisto for each pair of FASTQ files and merges the relevant columns into new files. One output file contains the TPMs and one output file contains the raw counts.
+
 ```
 Usage
 python3 merge_kallisto_output3.py --in <DIR> --gff <FILE> --tpms <FILE> --counts <FILE>
